@@ -10,6 +10,8 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // `npm run build:exe` sets this to bundle a self-contained server for the desktop app; Vercel ignores it.
+  ...(process.env.TRC20_STANDALONE === "1" ? { output: "standalone" as const } : {}),
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
