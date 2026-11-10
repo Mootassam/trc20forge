@@ -13,6 +13,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { rcedit } from "rcedit";
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const work = path.join(os.tmpdir(), "trc20forge-exe-build");
@@ -86,6 +87,14 @@ fs.writeFileSync(seaConfig, JSON.stringify({ main: path.join(work, "desktop", "l
 run(`"${nodeExe}"`, ["--experimental-sea-config", `"${seaConfig}"`], work);
 const exe = path.join(out, "TRC20-Forge.exe");
 fs.copyFileSync(nodeExe, exe);
+// App icon + file details (shown in Explorer / Task Manager). Must happen before the blob is injected.
+const version = JSON.parse(fs.readFileSync(path.join(work, "package.json"), "utf8")).version;
+await rcedit(exe, {
+  icon: path.join(work, "desktop", "icon.ico"),
+  "file-version": version,
+  "product-version": version,
+  "version-string": { ProductName: "TRC-20 Forge", FileDescription: "TRC-20 Forge", CompanyName: "TRC-20 Forge", OriginalFilename: "TRC20-Forge.exe", InternalName: "TRC20-Forge", LegalCopyright: "" },
+});
 run("npx", ["--yes", "postject@1.0.0-alpha.6", `"${exe}"`, "NODE_SEA_BLOB", `"${blob}"`, "--sentinel-fuse", "NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2"], work);
 
 fs.writeFileSync(path.join(out, "README.txt"), [
