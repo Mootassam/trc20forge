@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="35%" cy="30%" r="80%">
+      <stop offset="0" stop-color="#ff4d6d"/>
+      <stop offset="0.55" stop-color="#d90429"/>
+      <stop offset="1" stop-color="#7a0016"/>
+    </radialGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe08a"/>
+      <stop offset="0.5" stop-color="#f5b700"/>
+      <stop offset="1" stop-color="#b37400"/>
+    </linearGradient>
+    <linearGradient id="glyph" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#ffe7ec"/>
+    </linearGradient>
+  </defs>
+  <!-- coin rim -->
+  <circle cx="256" cy="256" r="248" fill="url(#rim)"/>
+  <!-- coin face -->
+  <circle cx="256" cy="256" r="222" fill="url(#bg)"/>
+  <!-- inner ring -->
+  <circle cx="256" cy="256" r="196" fill="none" stroke="#ffffff" stroke-opacity="0.22" stroke-width="6" stroke-dasharray="2 14" stroke-linecap="round"/>
+  <!-- stars -->
+  <g fill="#ffe08a">
+    <path d="M256 70 l7 15 16 2 -12 11 3 16 -14 -8 -14 8 3 -16 -12 -11 16 -2z"/>
+    <path d="M150 112 l5 10 11 1.5 -8 7.5 2 11 -10 -5.5 -10 5.5 2 -11 -8 -7.5 11 -1.5z"/>
+    <path d="M362 112 l5 10 11 1.5 -8 7.5 2 11 -10 -5.5 -10 5.5 2 -11 -8 -7.5 11 -1.5z"/>
+  </g>
+  <!-- bold B -->
+  <path fill="url(#glyph)" stroke="#5c0010" stroke-opacity="0.35" stroke-width="4"
+    d="M184 142 h102 c52 0 84 26 84 66 c0 26 -14 44 -36 52 c30 8 48 30 48 60 c0 46 -36 74 -94 74 h-104 z
+       M236 186 v62 h44 c22 0 34 -12 34 -31 c0 -19 -12 -31 -34 -31 z
+       M236 290 v68 h50 c24 0 38 -13 38 -34 c0 -21 -14 -34 -38 -34 z"/>
+  <!-- gloss -->
+  <ellipse cx="200" cy="150" rx="120" ry="60" fill="#ffffff" opacity="0.10" transform="rotate(-25 200 150)"/>
+</svg>
