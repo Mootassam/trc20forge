@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Power } from "lucide-react";
 import { Button } from "./ui";
 
@@ -45,14 +46,16 @@ export function DesktopControls() {
       <Button size="sm" variant="ghost" onClick={quit} loading={state === "quitting"} icon={<Power className="h-4 w-4" aria-hidden />} title="Stop TRC-20 Forge">
         <span className="hidden md:inline">Quit</span>
       </Button>
-      {state === "stopped" && (
+      {/* Portal: the sticky header uses backdrop-blur, which would trap a fixed overlay inside it. */}
+      {state === "stopped" && createPortal(
         <div role="alertdialog" aria-modal="true" aria-labelledby="stopped-title" className="fixed inset-0 z-50 grid place-items-center bg-zinc-950/60 p-4 backdrop-blur-sm">
           <div className="max-w-sm space-y-2 rounded-2xl bg-white p-6 text-center shadow-xl dark:bg-zinc-900">
             <Power className="mx-auto h-8 w-8 text-rose-500" aria-hidden />
             <p id="stopped-title" className="font-semibold">TRC-20 Forge is stopped</p>
             <p className="text-sm text-zinc-600 dark:text-zinc-400">You can close this tab. Start it again from the desktop or Start Menu shortcut.</p>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );
