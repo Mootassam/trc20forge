@@ -293,17 +293,17 @@ export function Forge() {
                   if (cfg) go(1);
                 }}
               >
-                <Field id="name" label="Token name" aside={`${form.name.length}/40`} error={touched.name ? errors.name : undefined} hint="Example: Bama Coin">
+                <Field id="name" label="Token name" aside={`${form.name.length}/40`} error={touched.name ? errors.name : undefined} hint="The full name wallets and explorers show (2–40 characters).">
                   <input
-                    id="name" className={inputClass(!!(touched.name && errors.name))} value={form.name} maxLength={40} autoComplete="off" placeholder="Bama Coin"
+                    id="name" className={inputClass(!!(touched.name && errors.name))} value={form.name} maxLength={40} autoComplete="off" placeholder="Token name"
                     aria-invalid={!!(touched.name && errors.name)} aria-describedby={touched.name && errors.name ? "name-error" : "name-hint"}
                     onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                     onBlur={() => setTouched((t) => ({ ...t, name: true }))}
                   />
                 </Field>
-                <Field id="symbol" label="Symbol" aside={`${form.symbol.length}/10`} error={touched.symbol ? errors.symbol : undefined} hint="2–10 uppercase letters or digits, e.g. BAMA">
+                <Field id="symbol" label="Symbol" aside={`${form.symbol.length}/10`} error={touched.symbol ? errors.symbol : undefined} hint="The short ticker shown next to balances: 2–10 uppercase letters or digits.">
                   <input
-                    id="symbol" className={cx(inputClass(!!(touched.symbol && errors.symbol)), "font-mono uppercase")} value={form.symbol} maxLength={10} autoComplete="off" placeholder="BAMA"
+                    id="symbol" className={cx(inputClass(!!(touched.symbol && errors.symbol)), "font-mono uppercase placeholder:font-sans placeholder:normal-case")} value={form.symbol} maxLength={10} autoComplete="off" placeholder="Token symbol"
                     aria-invalid={!!(touched.symbol && errors.symbol)} aria-describedby={touched.symbol && errors.symbol ? "symbol-error" : "symbol-hint"}
                     onChange={(e) => setForm((f) => ({ ...f, symbol: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "") }))}
                     onBlur={() => setTouched((t) => ({ ...t, symbol: true }))}
@@ -314,7 +314,7 @@ export function Forge() {
                   hint={!errors.supply && form.supply ? <>= {groupDigits(form.supply)} tokens{!errors.decimals && <> · {groupDigits(rawSupply(form.supply, form.decimals))} raw units</>}</> : "Whole tokens, minted once to your wallet"}
                 >
                   <input
-                    id="supply" inputMode="numeric" className={cx(inputClass(!!(touched.supply && errors.supply)), "font-mono")} value={form.supply} maxLength={16} autoComplete="off"
+                    id="supply" inputMode="numeric" className={cx(inputClass(!!(touched.supply && errors.supply)), "font-mono placeholder:font-sans")} value={form.supply} maxLength={16} autoComplete="off" placeholder="Total supply"
                     aria-invalid={!!(touched.supply && errors.supply)} aria-describedby={touched.supply && errors.supply ? "supply-error" : "supply-hint"}
                     onChange={(e) => setForm((f) => ({ ...f, supply: e.target.value.replace(/[^0-9]/g, "") }))}
                     onBlur={() => setTouched((t) => ({ ...t, supply: true }))}
@@ -334,7 +334,7 @@ export function Forge() {
                   hint={form.decimals === "6" ? "6 is the TRC-20 standard on TRON (same as USDT-TRC20)." : form.decimals === "18" ? "18 matches most Ethereum-style tokens." : form.decimals === "0" ? "0 = indivisible: only whole tokens can be sent." : "How many decimal places one token can be split into (0–18)."}
                 >
                   <input
-                    id="decimals" inputMode="numeric" className={cx(inputClass(!!(touched.decimals && errors.decimals)), "font-mono")} value={form.decimals} maxLength={2} autoComplete="off"
+                    id="decimals" inputMode="numeric" className={cx(inputClass(!!(touched.decimals && errors.decimals)), "font-mono placeholder:font-sans")} value={form.decimals} maxLength={2} autoComplete="off" placeholder="Decimals (0–18)"
                     aria-invalid={!!(touched.decimals && errors.decimals)} aria-describedby={touched.decimals && errors.decimals ? "decimals-error" : "decimals-hint"}
                     onChange={(e) => setForm((f) => ({ ...f, decimals: e.target.value.replace(/[^0-9]/g, "") }))}
                     onBlur={() => setTouched((t) => ({ ...t, decimals: true }))}
