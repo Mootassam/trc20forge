@@ -97,13 +97,27 @@ await rcedit(exe, {
 });
 run("npx", ["--yes", "postject@1.0.0-alpha.6", `"${exe}"`, "NODE_SEA_BLOB", `"${blob}"`, "--sentinel-fuse", "NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2"], work);
 
+// Mark the exe as a Windows GUI app (PE subsystem 2) instead of a console app (3): Windows then starts it
+// without a console window. The launcher logs to a file and shows errors as message boxes instead.
+{
+  const buf = fs.readFileSync(exe);
+  const pe = buf.readUInt32LE(0x3c);
+  if (buf.toString("latin1", pe, pe + 4) !== "PE\0\0") throw new Error("Not a PE file: " + exe);
+  const subsystemOffset = pe + 24 + 68; // optional header + Subsystem (same offset for PE32 and PE32+)
+  if (buf.readUInt16LE(subsystemOffset) !== 3) throw new Error("Unexpected PE subsystem; refusing to patch.");
+  buf.writeUInt16LE(2, subsystemOffset);
+  fs.writeFileSync(exe, buf);
+}
+
 fs.writeFileSync(path.join(out, "README.txt"), [
   "TRC-20 Forge (desktop)",
   "======================",
   "",
   "1. Double-click TRC20-Forge.exe.",
   "2. Chrome opens at http://127.0.0.1:3210 . Use the Chrome profile where TronLink is installed.",
-  "3. Keep the small black window open while you use the app. Close it to stop.",
+  "3. It runs quietly in the background (no window). Stop it with Quit in the app header;",
+  "   it also stops by itself a few minutes after you close the app's tab.",
+  "   Log file: %LOCALAPPDATA%\\TRC-20 Forge\\launcher.log",
   "",
   "Keep TRC20-Forge.exe next to the \"app\" folder. Internet is needed (TronLink and the compiler download).",
   "Windows SmartScreen may warn the first time because the exe isn't code-signed: More info -> Run anyway.",

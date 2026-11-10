@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Hexagon, Wallet } from "lucide-react";
 import { NETWORKS } from "@/lib/tron/networks";
 import { useWalletCtx } from "./WalletProvider";
+import { DesktopControls } from "./DesktopControls";
 import { Badge, Button, cx, Skeleton } from "./ui";
 
 export const shortAddr = (a: string) => `${a.slice(0, 5)}…${a.slice(-5)}`;
@@ -48,6 +49,7 @@ export function SiteHeader() {
         </div>
 
         <div className="flex items-center gap-2">
+          <DesktopControls />
           {!ready ? (
             <Skeleton className="h-9 w-28 rounded-xl sm:w-40" />
           ) : wallet.status === "connected" ? (
