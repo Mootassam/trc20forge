@@ -8,6 +8,7 @@
  * on GitHub / Vercel. Commit first, then build. Needs git, npm and internet (for npm ci).
  */
 import { execFileSync } from "node:child_process";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -39,7 +40,9 @@ rm(work);
 fs.mkdirSync(work, { recursive: true });
 const tarball = path.join(os.tmpdir(), "trc20forge-src.tar");
 run("git", ["archive", "--format=tar", "-o", tarball, "HEAD"], repo);
-run("tar", ["-xf", tarball, "-C", work], repo);
+// Windows' own bsdtar: the GNU tar that ships with Git Bash reads "C:\..." as a remote host.
+const winTar = path.join(process.env.SystemRoot || "C:\\Windows", "System32", "tar.exe");
+run(fs.existsSync(winTar) ? `"${winTar}"` : "tar", ["-xf", `"${tarball}"`, "-C", `"${work}"`], repo);
 rm(tarball);
 
 // 2. Install and build the standalone server.
@@ -54,14 +57,36 @@ copy(path.join(work, ".next", "standalone"), app);
 copy(path.join(work, ".next", "static"), path.join(app, ".next", "static"));
 if (fs.existsSync(path.join(work, "public"))) copy(path.join(work, "public"), path.join(app, "public"));
 
-// 4. Single-executable launcher: a copy of node.exe with desktop/launcher.cjs injected.
+// 4. Single-executable launcher: an official node.exe (Node 22 LTS, which supports single-executable apps)
+//    with desktop/launcher.cjs injected. The download is cached and checked against nodejs.org's SHA-256 list.
+const NODE_VERSION = "v22.23.4";
+async function officialNodeExe() {
+  const dir = path.join(os.tmpdir(), "trc20forge-node");
+  const file = path.join(dir, `node-${NODE_VERSION}-win-x64.exe`);
+  const base = `https://nodejs.org/dist/${NODE_VERSION}`;
+  const sums = await (await fetch(`${base}/SHASUMS256.txt`)).text();
+  const want = sums.split(/\r?\n/).map((l) => l.trim().split(/\s+/)).find(([, name]) => name === "win-x64/node.exe")?.[0];
+  if (!want) throw new Error("Couldn't find node.exe in Node's checksum list.");
+  const sha = (buf) => crypto.createHash("sha256").update(buf).digest("hex");
+  if (fs.existsSync(file) && sha(fs.readFileSync(file)) === want) return file;
+  console.log(`
+> downloading ${base}/win-x64/node.exe`);
+  const res = await fetch(`${base}/win-x64/node.exe`);
+  if (!res.ok) throw new Error(`Download failed: HTTP ${res.status}`);
+  const buf = Buffer.from(await res.arrayBuffer());
+  if (sha(buf) !== want) throw new Error("node.exe checksum mismatch: refusing to use it.");
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(file, buf);
+  return file;
+}
+const nodeExe = await officialNodeExe();
 const blob = path.join(work, "sea-prep.blob");
 const seaConfig = path.join(work, "sea-config.json");
 fs.writeFileSync(seaConfig, JSON.stringify({ main: path.join(work, "desktop", "launcher.cjs"), output: blob, disableExperimentalSEAWarning: true }));
-run(process.execPath, ["--experimental-sea-config", seaConfig], work);
+run(`"${nodeExe}"`, ["--experimental-sea-config", `"${seaConfig}"`], work);
 const exe = path.join(out, "TRC20-Forge.exe");
-fs.copyFileSync(process.execPath, exe);
-run("npx", ["--yes", "postject@1.0.0-alpha.6", exe, "NODE_SEA_BLOB", blob, "--sentinel-fuse", "NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2"], work);
+fs.copyFileSync(nodeExe, exe);
+run("npx", ["--yes", "postject@1.0.0-alpha.6", `"${exe}"`, "NODE_SEA_BLOB", `"${blob}"`, "--sentinel-fuse", "NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2"], work);
 
 fs.writeFileSync(path.join(out, "README.txt"), [
   "TRC-20 Forge (desktop)",
