@@ -13,7 +13,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { rcedit } from "rcedit";
+import rcedit from "rcedit"; // v4: CommonJS default export, works on Node 18
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const work = path.join(os.tmpdir(), "trc20forge-exe-build");

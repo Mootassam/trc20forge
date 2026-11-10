@@ -33,7 +33,7 @@
     "ethereum-cryptography": "^3.2.0",
     "jsdom": "^26.1.0",
     "postcss": "^8.5.6",
-    "rcedit": "^5.0.2",
+    "rcedit": "4.0.1",
     "solc": "0.8.20",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.9.2",
