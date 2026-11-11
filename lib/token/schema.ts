@@ -79,8 +79,8 @@ export const tokenConfigSchema = z
       .optional(),
   })
   .superRefine((cfg, ctx) => {
-    const r = reservedReason(cfg.name, cfg.symbol);
-    if (r) ctx.addIssue({ code: z.ZodIssueCode.custom, path: [r.field], message: r.message });
+    // const r = reservedReason(cfg.name, cfg.symbol);
+    // if (r) ctx.addIssue({ code: z.ZodIssueCode.custom, path: [r.field], message: r.message });
   });
 
 export type TokenConfig = z.infer<typeof tokenConfigSchema>;
